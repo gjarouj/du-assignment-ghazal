@@ -1,17 +1,19 @@
 type buttonType = "primary" | "secondary" | "tertiary";
+type ButtonSize = "small" | "regular";
 interface ButtonProps {
     type: buttonType,
+    size?: ButtonSize,
     label: string,
 }
-function generateClassList(type: buttonType): string {
+function generateClassList(type: buttonType, size?: ButtonSize): string {
     switch (type) {
         case "primary":
             return "bg-blue-500 text-white hover:bg-blue-700";
           case "secondary":
             return `
             relative
-            h-[2.125rem]
-            w-[7rem]
+            ${size && size === 'small' ? 'min-w-auto h-fit text-[0.8rem] py-1 px-3' : 'min-w-[7rem] h-full p-2'}
+            bg-white
             border
             rounded-[0.3125rem]
             text-[#8d007c]
@@ -26,10 +28,8 @@ function generateClassList(type: buttonType): string {
               font-medium
               underline
               hover:text-[#c724b1]
-              mt-[0.5rem]
             `;
       }
 }
-const Button: React.FC < ButtonProps > = ({ type, label }) => <button className={`font-medium focus:outline focus:outline-[#8d007c] focus:ring-2 focus:ring-[#8d007c] ${generateClassList(type)}`}>{label}</button>;
+const Button: React.FC < ButtonProps > = ({ type, size, label }) => <button className={`font-medium ${generateClassList(type, size)}`}>{label}</button>;
 export default Button;
-  
