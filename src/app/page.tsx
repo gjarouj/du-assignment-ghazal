@@ -40,6 +40,7 @@ export default function Home() {
       flexiMin: 1020,
       isDoubleNationalData: true,
       limitedTimeOffer: true,
+      whiteCast: false,
       offer: {
         noActivation: true,
         freeGB: 25,
@@ -66,7 +67,7 @@ export default function Home() {
     {
       cost: 1000,
       nationalData: 1000,
-      flexiMin: "Unlimited" as "Unlimited",
+      flexiMin: "Unlimited" as const,
       isDoubleNationalData: true,
       limitedTimeOffer: true,
       offer: {
@@ -83,12 +84,12 @@ export default function Home() {
   return (
     <div className="w-full mb-6 overflow-hidden">
       <div className="mt-6 py-24 mx-auto px-6 sm:px-6 lg:px-24 max-w-full lg:max-w-[125rem] flex flex-col items-center">
-        <div className="flex-wrap flex justify-between w-full mb-[3rem]">
-          <h2 className="font-bold">
+        <div className="flex-wrap flex flex-col sm:flex-row justify-between w-full mb-[3rem]">
+          <h2 className="font-bold pb-4 xl:pb-0">
             Already have a phone? Choose your Power Plan
           </h2>
-          <div className="flex-wrap flex items-start">
-            <span className="text-[#787778] font-medium text-[1rem]">
+          <div className="flex-wrap flex items-start flex-col sm:flex-row">
+            <span className="text-du-gray-dark font-medium text-[1rem] pb-4 sm:pb-0">
               Show plans with:
             </span>
             <RadioButtonGroup
@@ -104,6 +105,12 @@ export default function Home() {
                   label: "National minutes",
                 },
               ]}
+            />
+
+            <hr
+              className="border-t border-du-gray w-full py-2  
+                          md:border-l md:border-t-0 md:w-auto  
+                          md:mt-[0.25rem] md:h-[calc(100%-1.125rem)]"
             />
 
             <RadioButtonGroup
@@ -129,6 +136,7 @@ export default function Home() {
               <Card
                 key={index}
                 cost={plan.cost}
+                whiteCast={plan.whiteCast}
                 nationalData={plan.nationalData}
                 flexiMin={plan.flexiMin}
                 isDoubleNationalData={plan.isDoubleNationalData}

@@ -35,3 +35,35 @@ button:focus-visible, a:focus-visible {
 input:focus + div,input:focus:hover + div, button:focus, a:focus, button:focus:hover, a:focus:hover  {
   box-shadow: 0 0 0 1px #00a9ce, 0 0 0 2px #753bbd !important;
 }
+
+/* swiper overrides */
+
+.swiper {
+  overflow: visible !important;
+}
+.swiper-wrapper {
+  overflow: visible !important;
+}
+.swiper-slide {
+  overflow: visible !important;
+  background: transparent !important; /* Ensure no default Swiper background */
+}
+.swiper-pagination {
+  top: calc(100% + 32px) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+.swiper-pagination-bullet {
+  background-color: #df92d4 !important;
+  opacity: 1 !important;
+  border-radius: 50%;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.swiper-pagination-bullet-active {
+  width: 14px !important;
+  height: 14px !important;
+  background-color: #c72bb0 !important;
+  transform: scale(1.2);
+}
