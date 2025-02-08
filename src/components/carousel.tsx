@@ -32,7 +32,7 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
   const checkOverflow = useCallback(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.clientWidth;
-      const totalCardsWidth = slides.length * 340 + (slides.length - 1) * 8; // Assuming each card is 340px wide + 16px spacing
+      const totalCardsWidth = slides.length * 340 + (slides.length - 1) * 16; // Assuming each card is 340px wide + 16px spacing
       const overflow = totalCardsWidth > containerWidth;
       setIsOverflowing(overflow);
 
@@ -46,11 +46,11 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
     swiper.slides.forEach((slide: HTMLElement, index: number) => {
       const slideRect = slide.getBoundingClientRect();
       const containerRect = containerRef.current?.getBoundingClientRect();
-
+      const buffer = 8; // Buffer to consider slide partially visible
       if (containerRect) {
         const isFullyVisible =
-          slideRect.left >= containerRect.left &&
-          slideRect.right <= containerRect.right;
+          (slideRect.left + buffer) >= containerRect.left &&
+          (slideRect.right - buffer) <= containerRect.right;
 
         if (!isFullyVisible) {
           partiallyVisible.add(index);
