@@ -4,14 +4,15 @@ import CheckIcon from "@mui/icons-material/Check";
 import Badge from "./badge";
 import Button from "./button";
 import Tag from "./tag";
-interface CardProps {
+export interface CardProps {
   cost: number;
   nationalData: number | "Unlimited";
   isDoubleNationalData?: boolean;
   flexiMin: number | "Unlimited";
   flexiMinOld?: number;
   limitedTimeOffer?: boolean;
-  mostPopular?: boolean,
+  mostPopular?: boolean;
+  whiteCast?: boolean;
   offer: {
     noActivation: boolean;
     freeGB: number;
@@ -31,36 +32,40 @@ const Card: React.FC<CardProps> = ({
   limitedTimeOffer,
   offer,
   mostPopular,
+  whiteCast,
   onClick,
 }) => {
   return (
     <div
-      className="flex-1 w-[21rem] relative bg-white border-[0.03125rem] border-solid border-[rgba(0,0,0,0.12)] rounded-[0.625rem] p-[1.375rem] cursor-pointer"
+      className="flex-1 w-[21rem] relative w-[340px] h-[100%] bg-white border-[0.03125rem] border-solid border-[rgba(0,0,0,0.12)] rounded-[0.625rem] p-[1.375rem] cursor-pointer"
       onClick={onClick}
     >
-      <span className="absolute left-[-0.0625rem] top-[-0.0625rem] h-[calc(100%+0.125rem)] w-[0.5rem] [background:linear-gradient(0deg,#c724b1_15%,#00a9ce_35%)] rounded-bl-[0.625rem] rounded-tl-[0.625rem]"></span>
-      {mostPopular && (<Tag text="Most popular" />)}
-      <div className="flex flex-col justify-between h-full">
+      {whiteCast && (
+        <div className="rounded-[0.625rem] z-10 top-0 absolute left-0 h-0 w-[100%] h-[100%] bg-white bg-opacity-50"></div>
+      )}
+      <span className="absolute left-[-0.0625rem] top-[-0.0625rem] h-[calc(100%+0.125rem)] w-[0.5rem] [background:linear-gradient(0deg,#c700b1_15%,#00a9ce_35%)] rounded-bl-[0.625rem] rounded-tl-[0.625rem]"></span>
+      {mostPopular && <Tag text="Most popular" />}
+      <div className="flex flex-col justify-between h-full ml-2">
         <div>
-          <div className="flex flex-col border-b-[0.0625rem] border-b-black/12 pb-[0.75rem]">
-            <span className="text-[0.9375rem] text-[#c724b1]">You Pay</span>
-            <span className="text-[0.9375rem] text-[#c724b1]">
-              <strong className="text-[1.375rem]">AED {cost}</strong>/month
+          <div className="flex flex-col border-b-[0.0625rem] border-b-du-gray-lighter pb-[0.75rem]">
+            <span className="text-[0.9375rem] text-du-pink">You Pay</span>
+            <span className="text-[0.9375rem] text-du-pink">
+              <strong className="text-[1.5rem]">AED {cost}</strong>/month
             </span>
             <span className="text-[0.8125rem]">For 12 months + 5% VAT</span>
           </div>
-          <div className="flex flex-col border-b-[0.0625rem] border-b-black/12 py-[0.75rem]">
-            <span className="text-[0.9375rem] text-[#00a9ce]">You Get</span>
-            <span className="text-[0.9375rem] text-[#00a9ce]">
-              <strong className="text-[1.375rem]">Power Plan {cost}</strong>
+          <div className="flex flex-col border-b-[0.0625rem] border-b-du-gray-lighter py-[0.75rem]">
+            <span className="text-[0.9375rem] text-du-blue">You Get</span>
+            <span className="text-[0.9375rem] text-du-blue">
+              <strong className="text-[1.5rem]">Power Plan {cost}</strong>
             </span>
           </div>
-          <div className="flex flex-col items-center justify-between py-[0.75rem] border-b-[1px] border-b-black/12">
-            <div className="flex items-center justify-between pb-[8px] w-full">
-              <strong className="relative">
+          <div className="flex flex-col items-center justify-between py-[0.75rem] border-b-[1px] border-b-du-gray-lighter">
+            <div className="flex items-center pb-[8px] w-full">
+              <strong className="relative text-[1.5rem] pr-2">
                 {" "}
                 {isDoubleNationalData && nationalData !== "Unlimited" && (
-                  <span className="relative text-[#cccccc] text-[0.9375rem] font-semibold pr-[4px] after:content-[''] after:absolute after:top-[calc(50%-1px)] after:left-[-3px] after:w-[calc(100%+3px)] after:h-[2px] after:bg-[linear-gradient(to_bottom,#cccccc_50%,#ffffff_50%)] after:rotate-[25deg] after:z-10">
+                  <span className="relative text-du-gray font-semibold pr-[4px] after:content-[''] after:absolute after:top-[calc(50%-1px)] after:left-[-3px] after:w-[calc(100%+3px)] after:h-[2px] after:bg-[linear-gradient(to_bottom,#cccccc_50%,#ffffff_50%)] after:rotate-[25deg] after:z-10">
                     {" "}
                     {nationalData / 2}
                   </span>
@@ -75,15 +80,15 @@ const Card: React.FC<CardProps> = ({
                   : `National data`}
               </span>
             </div>
-            <div className="flex items-center justify-between pb-[8px] w-full">
-              <strong>
+            <div className="flex items-center pb-[8px] w-full">
+              <strong className="text-[1.5rem] pr-2">
                 {" "}
                 {flexiMinOld && (
                   <span
-                    className="text-[#dededd] text-[0.9375rem] font-semibold pr-[4px]
-                                relative border border-transparent before:absolute before:top-0
-                                before:left-0 before:w-full before:h-full before:border-t
-                                before:border-[#dededd] before:rotate-[45deg]"
+                    className="text-du-gray-light font-semibold pr-[4px]
+                          relative border border-transparent before:absolute before:top-0
+                          before:left-0 before:w-full before:h-full before:border-t
+                          before:border-du-gray-light before:rotate-[45deg]"
                   >
                     {" "}
                     {flexiMinOld}
@@ -145,9 +150,9 @@ const Card: React.FC<CardProps> = ({
                 </p>
               </div>
             )}
-            <div className="border-t-[1px] border-t-black/12 pt-[0.75rem] flex justify-between align-center">
-              <Button type={"tertiary"} label={"What you get"}/>
-              <Button type={"secondary"} label={"Select"}/>
+            <div className="border-t-[1px] border-t-black/12 pt-[0.75rem] flex justify-between items-center">
+              <Button type={"tertiary"} label={"What you get"} />
+              <Button type={"secondary"} label={"Select"} />
             </div>
           </div>
         </div>

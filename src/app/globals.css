@@ -67,3 +67,4 @@ input:focus + div,input:focus:hover + div, button:focus, a:focus, button:focus:h
   background-color: #c72bb0 !important;
   transform: scale(1.2);
 }
+

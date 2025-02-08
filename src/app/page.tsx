@@ -82,9 +82,9 @@ export default function Home() {
   ];
 
   return (
-    <div className="w-full mb-6 overflow-hidden">
-      <div className="mt-6 py-24 mx-auto px-6 sm:px-6 lg:px-24 max-w-full lg:max-w-[125rem] flex flex-col items-center">
-        <div className="flex-wrap flex flex-col sm:flex-row justify-between w-full mb-[3rem]">
+    <div className="w-[100%] mb-6 overflow-hidden">
+      <div className="mt-6 py-24 mx-auto px-6 sm:px-6 lg:px-24 max-w-[100%] lg:max-w-[125rem] flex flex-col items-center">
+        <div className="flex-wrap flex flex-col sm:flex-row justify-between w-[100%] mb-[3rem]">
           <h2 className="font-bold pb-4 xl:pb-0">
             Already have a phone? Choose your Power Plan
           </h2>
@@ -108,7 +108,7 @@ export default function Home() {
             />
 
             <hr
-              className="border-t border-du-gray w-full py-2  
+              className="border-t border-du-gray w-[100%] py-2  
                           md:border-l md:border-t-0 md:w-auto  
                           md:mt-[0.25rem] md:h-[calc(100%-1.125rem)]"
             />
@@ -130,7 +130,7 @@ export default function Home() {
             <Button type="secondary" size="small" label="Hide filters" />
           </div>
         </div>
-        <div className="flex-nowrap flex w-full gap-[1.5rem]">
+        <div className="flex-nowrap flex w-[100%] gap-[1.5rem]">
           <Carousel>
             {plans.map((plan, index) => (
               <Card

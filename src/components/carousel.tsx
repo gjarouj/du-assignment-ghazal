@@ -1,27 +1,38 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper as SwiperInstance } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, ReactElement } from "react";
+import React from "react";
+import { CardProps } from "./card";
+import Card from "./card";
 
 interface CarouselProps {
   children: React.ReactNode;
 }
 
+interface ExtendedSwiper extends SwiperInstance {
+  slides: HTMLElement[];
+}
+
 const Carousel: React.FC<CarouselProps> = ({ children }) => {
   const slides = Array.isArray(children) ? children : [children];
   const containerRef = useRef<HTMLDivElement>(null);
+  const swiperRef = useRef<SwiperInstance | null>(null); // Reference to Swiper instance
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [slidesPerView, setSlidesPerView] = useState<number | "auto">("auto");
-  const [activeSlide, setActiveSlide] = useState<number>(0); // Track active slide index
-  const [partiallyVisibleSlides, setPartiallyVisibleSlides] = useState<Set<number>>(new Set()); // Track partially visible slides
+  const [, setActiveSlide] = useState<number>(0); // Track active slide index
+  const [partiallyVisibleSlides, setPartiallyVisibleSlides] = useState<
+    Set<number>
+  >(new Set()); // Track partially visible slides
 
   const checkOverflow = useCallback(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.clientWidth;
-      const totalCardsWidth = slides.length * 340 + (slides.length - 1) * 16; // Assuming each card is 340px wide + 16px spacing
+      const totalCardsWidth = slides.length * 340 + (slides.length - 1) * 8; // Assuming each card is 340px wide + 16px spacing
       const overflow = totalCardsWidth > containerWidth;
       setIsOverflowing(overflow);
 
@@ -29,43 +40,61 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
     }
   }, [slides.length]);
 
-  const updatePartiallyVisibleSlides = (swiper: any) => {
-    const visibleSlides = new Set<number>();
+  const updatePartiallyVisibleSlides = (swiper: ExtendedSwiper) => {
+    const partiallyVisible = new Set<number>();
 
-    swiper.slides.forEach((slide: any, index: number) => {
+    swiper.slides.forEach((slide: HTMLElement, index: number) => {
       const slideRect = slide.getBoundingClientRect();
       const containerRect = containerRef.current?.getBoundingClientRect();
-      if (
-        slideRect.right > (containerRect?.left ?? 0) &&
-        slideRect.left < (containerRect?.right ?? 0)
-      ) {
-        // Slide is at least partially visible
-        visibleSlides.add(index);
+
+      if (containerRect) {
+        const isFullyVisible =
+          slideRect.left >= containerRect.left &&
+          slideRect.right <= containerRect.right;
+
+        if (!isFullyVisible) {
+          partiallyVisible.add(index);
+        }
       }
     });
-
-    setPartiallyVisibleSlides(visibleSlides);
+    setPartiallyVisibleSlides(partiallyVisible);
   };
 
   useEffect(() => {
     checkOverflow();
-    window.addEventListener("resize", checkOverflow);
+    window.addEventListener("resize", () => {
+      checkOverflow();
+      // Delay the visibility check after resize to allow Swiper to update
+      setTimeout(() => {
+        if (swiperRef.current) {
+          updatePartiallyVisibleSlides(swiperRef.current);
+        }
+      }, 0);
+    });
 
     return () => window.removeEventListener("resize", checkOverflow);
   }, [checkOverflow]);
 
-  const handleSwiperInit = (swiper: any) => {
+  const handleSwiperInit = (swiper: ExtendedSwiper) => {
+    swiperRef.current = swiper;
     checkOverflow();
-    updatePartiallyVisibleSlides(swiper);
+    setTimeout(() => updatePartiallyVisibleSlides(swiper), 0);
   };
 
-  const handleSlideChange = (swiper: any) => {
+  const handleSlideChange = (swiper: ExtendedSwiper) => {
     setActiveSlide(swiper.activeIndex);
-    updatePartiallyVisibleSlides(swiper);
+    setTimeout(() => updatePartiallyVisibleSlides(swiper), 0);
+  };
+
+  const handleTransitionEnd = (swiper: ExtendedSwiper) => {
+    updatePartiallyVisibleSlides(swiper); // Call updatePartiallyVisibleSlides when transition ends
   };
 
   return (
-    <div ref={containerRef} className="relative w-full mx-auto overflow-visible pb-4">
+    <div
+      ref={containerRef}
+      className="relative w-full mx-auto overflow-visible pb-4"
+    >
       <Swiper
         slidesPerView={slidesPerView}
         loop={false}
@@ -75,54 +104,38 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
         className="pb-8"
         onInit={handleSwiperInit} // Handle initialization of Swiper
         onSlideChange={handleSlideChange} // Track active slide index
+        onTransitionEnd={handleTransitionEnd} // Handle transition end
       >
-        {slides.map((child, index) => (
-          <SwiperSlide
-            key={index}
-            className={`w-fit flex-shrink-0 max-w-fit !flex !h-auto ${
-              index !== slides.length - 1 ? "mr-4" : ""
-            } ${partiallyVisibleSlides.has(index) ? "bg-white bg-opacity-50" : ""}`} // Apply bg class to partially visible slides
-          >
-            {child}
-          </SwiperSlide>
-        ))}
+        {slides.map((child, index) => {
+          // Check if the child is of type 'Card'`
+          if (React.isValidElement(child) && child.type === Card) {
+            return (
+              <SwiperSlide
+                key={index}
+                className={`w-fit flex-shrink-0 max-w-fit !flex !h-auto ${
+                  index !== slides.length - 1 ? "mr-4" : ""
+                }`}
+              >
+                {/* Clone the element and pass whiteCast prop */}
+                {React.cloneElement(child as ReactElement<CardProps>, {
+                  whiteCast: partiallyVisibleSlides.has(index),
+                })}
+              </SwiperSlide>
+            );
+          }
+          // If the child is not a Card component
+          return (
+            <SwiperSlide
+              key={index}
+              className={`w-fit flex-shrink-0 max-w-fit !flex !h-auto ${
+                index !== slides.length - 1 ? "mr-4" : ""
+              }`}
+            >
+              {child}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
-
-      {/* White shadow effect on the right, but only show if not on the last slide */}
-      {isOverflowing && activeSlide !== slides.length - 1 && (
-        <div className="absolute right-[-2.25rem] h-[calc(100%-1.25rem)] rounded-lg top-[0.125rem] w-[21rem] bg-white bg-opacity-50 pointer-events-none z-10" />
-      )}
-
-      <style jsx global>{`
-        .swiper {
-          overflow: visible !important;
-        }
-        .swiper-wrapper {
-          overflow: visible !important;
-        }
-        .swiper-slide {
-          overflow: visible !important;
-        }
-        .swiper-pagination {
-          top: calc(100% + 32px) !important;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 4px;
-        }
-        .swiper-pagination-bullet {
-          background-color: #df92d4 !important;
-          opacity: 1 !important;
-          border-radius: 50%;
-          transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .swiper-pagination-bullet-active {
-          width: 14px !important;
-          height: 14px !important;
-          background-color: #c72bb0 !important;
-          transform: scale(1.2);
-        }
-      `}</style>
     </div>
   );
 };

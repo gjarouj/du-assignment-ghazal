@@ -23,7 +23,7 @@ const RadioButtonGroup: React.FC<RadioButtonProps> = ({
     if (onChange) onChange(newValue);
   };
   return (
-    <fieldset className="px-[1.5rem]">
+    <fieldset className="px-0 sm:px-[1.5rem] py-4 sm:py-0">
       <legend className="absolute top-0 text-0 invisible"> {legend}</legend>
       <div className="flex flex-col">
         {" "}
