@@ -85,7 +85,7 @@ export default function Home() {
     <div className="w-[100%] mb-6 overflow-hidden">
       <div className="mt-6 py-24 mx-auto px-6 sm:px-6 lg:px-24 max-w-[100%] lg:max-w-[125rem] flex flex-col items-center">
         <div className="flex-wrap flex flex-col sm:flex-row justify-between w-[100%] mb-[3rem]">
-          <h2 className="font-bold pb-4 xl:pb-0">
+          <h2 className="font-bold pb-4 pr-2">
             Already have a phone? Choose your Power Plan
           </h2>
           <div className="flex-wrap flex items-start flex-col sm:flex-row">

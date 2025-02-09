@@ -8,7 +8,7 @@ interface RadioButtonProps {
   legend: string;
   name: string;
   options: Option[];
-  onChange?: (value: string | null) => void;
+  onChange?: (option: Option | null) => void;
 }
 const RadioButtonGroup: React.FC<RadioButtonProps> = ({
   name,
@@ -17,10 +17,10 @@ const RadioButtonGroup: React.FC<RadioButtonProps> = ({
   onChange,
 }) => {
   const [selected, setSelected] = useState<string | null>(null);
-  const handleChange = (value: string) => {
-    const newValue = selected === value ? null : value;
+  const handleChange = (option: Option) => {
+    const newValue = selected === option.value ? null : option.value;
     setSelected(newValue);
-    if (onChange) onChange(newValue);
+    if (onChange) onChange(option);
   };
   return (
     <fieldset className="px-0 sm:px-[1.5rem] py-4 sm:py-0">
@@ -38,7 +38,7 @@ const RadioButtonGroup: React.FC<RadioButtonProps> = ({
               name={name}
               value={option.value}
               checked={selected === option.value}
-              onChange={() => handleChange(option.value)}
+              onChange={() => handleChange(option)}
               className="opacity-0 m-0 block w-0 h-0 appearance-none border-none peer"
             />
 

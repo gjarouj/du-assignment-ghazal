@@ -40,9 +40,16 @@ const Card: React.FC<CardProps> = ({
       className="flex-1 w-[21rem] relative w-[340px] h-[100%] bg-white border-[0.03125rem] border-solid border-[rgba(0,0,0,0.12)] rounded-[0.625rem] p-[1.375rem] cursor-pointer"
       onClick={onClick}
     >
-      {whiteCast && (
-        <div className="rounded-[0.625rem] z-10 top-0 absolute left-0 h-0 w-[100%] h-[100%] bg-white bg-opacity-50"></div>
-      )}
+      <div
+        className={`rounded-[0.625rem] top-0 absolute left-0 w-full h-full 
+              bg-white transition-opacity duration-300 ease-in-out
+              ${
+                whiteCast
+                  ? "bg-opacity-50 opacity-100 z-10"
+                  : "bg-opacity-0 opacity-0 -z-10"
+              }`}
+      ></div>
+
       <span className="absolute left-[-0.0625rem] top-[-0.0625rem] h-[calc(100%+0.125rem)] w-[0.5rem] [background:linear-gradient(0deg,#c700b1_15%,#00a9ce_35%)] rounded-bl-[0.625rem] rounded-tl-[0.625rem]"></span>
       {mostPopular && <Tag text="Most popular" />}
       <div className="flex flex-col justify-between h-full ml-2">

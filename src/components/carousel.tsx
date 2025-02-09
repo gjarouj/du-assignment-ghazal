@@ -7,8 +7,7 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import { useEffect, useRef, useState, useCallback, ReactElement } from "react";
 import React from "react";
-import { CardProps } from "./card";
-import Card from "./card";
+import Card, { CardProps } from "./card";
 
 interface CarouselProps {
   children: React.ReactNode;
@@ -24,23 +23,34 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
   const swiperRef = useRef<SwiperInstance | null>(null); // Reference to Swiper instance
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [slidesPerView, setSlidesPerView] = useState<number | "auto">("auto");
-  const [, setActiveSlide] = useState<number>(0); // Track active slide index
   const [partiallyVisibleSlides, setPartiallyVisibleSlides] = useState<
     Set<number>
   >(new Set()); // Track partially visible slides
 
   const checkOverflow = useCallback(() => {
-    if (containerRef.current) {
+    if (containerRef.current && swiperRef.current) {
       const containerWidth = containerRef.current.clientWidth;
-      const totalCardsWidth = slides.length * 340 + (slides.length - 1) * 16; // Assuming each card is 340px wide + 16px spacing
+      let totalCardsWidth = 0;
+  
+      swiperRef.current.slides.forEach((slide) => {
+        const slideRect = slide.getBoundingClientRect();
+        const style = window.getComputedStyle(slide);
+        const paddingLeft = parseFloat(style.paddingLeft) || 0;
+        const paddingRight = parseFloat(style.paddingRight) || 0;
+        
+        totalCardsWidth += slideRect.width + paddingLeft + paddingRight;
+      });
+  
       const overflow = totalCardsWidth > containerWidth;
       setIsOverflowing(overflow);
-
       setSlidesPerView(overflow ? "auto" : slides.length);
     }
   }, [slides.length]);
+  
+  
 
   const updatePartiallyVisibleSlides = (swiper: ExtendedSwiper) => {
+    checkOverflow();
     const partiallyVisible = new Set<number>();
 
     swiper.slides.forEach((slide: HTMLElement, index: number) => {
@@ -61,34 +71,23 @@ const Carousel: React.FC<CarouselProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    checkOverflow();
     window.addEventListener("resize", () => {
-      checkOverflow();
-      // Delay the visibility check after resize to allow Swiper to update
       setTimeout(() => {
-        if (swiperRef.current) {
-          updatePartiallyVisibleSlides(swiperRef.current);
-        }
+        if (swiperRef.current) updatePartiallyVisibleSlides(swiperRef.current);
       }, 0);
     });
 
     return () => window.removeEventListener("resize", checkOverflow);
-  }, [checkOverflow]);
+  });
 
   const handleSwiperInit = (swiper: ExtendedSwiper) => {
     swiperRef.current = swiper;
-    checkOverflow();
     setTimeout(() => updatePartiallyVisibleSlides(swiper), 0);
   };
 
-  const handleSlideChange = (swiper: ExtendedSwiper) => {
-    setActiveSlide(swiper.activeIndex);
-    setTimeout(() => updatePartiallyVisibleSlides(swiper), 0);
-  };
+  const handleSlideChange = (swiper: ExtendedSwiper) => setTimeout(() => updatePartiallyVisibleSlides(swiper), 0);
 
-  const handleTransitionEnd = (swiper: ExtendedSwiper) => {
-    updatePartiallyVisibleSlides(swiper); // Call updatePartiallyVisibleSlides when transition ends
-  };
+  const handleTransitionEnd = (swiper: ExtendedSwiper) => updatePartiallyVisibleSlides(swiper);
 
   return (
     <div
